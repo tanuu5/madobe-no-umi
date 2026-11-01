@@ -290,7 +290,7 @@ async function main() {
   }
 
   // --- loop -------------------------------------------------------------------------------
-  const clock = new THREE.Clock();
+  const timer = new THREE.Timer(); // THREE.Clock is deprecated since r183
   let elapsed = 0;
   // console hooks for tinkering: window.__finestra.state.target = 3, .paused = true,
   // .afterRender = (renderer) => { /* read pixels of the frame just drawn */ }
@@ -311,8 +311,9 @@ async function main() {
   }
   function frame() {
     requestAnimationFrame(frame);
-    if (hooks.paused) { clock.getDelta(); return; }
-    const dt = Math.min(clock.getDelta(), 0.1);
+    timer.update(); // also while paused, so resuming does not jump
+    if (hooks.paused) return;
+    const dt = Math.min(timer.getDelta(), 0.1);
     if (!document.hidden) adapt(dt);
     tick(dt);
   }
